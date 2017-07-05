@@ -12,7 +12,7 @@ import org.apache.spark.{SparkConf, SparkContext}
  */
 object App extends App {
 
-  def loadCSV(sqlContext: SQLContext, pathCSV: String, nullValue: String, separator: String, customSchema: StructType, haveSchema: String): DataFrame = sqlContext.read
+  def loadFile(sqlContext: SQLContext, pathCSV: String, nullValue: String, separator: String, customSchema: StructType, haveSchema: String): DataFrame = sqlContext.read
     .format("com.databricks.spark.csv")
     .option("header", haveSchema) // Use first line of all files as header
     .option("delimiter", separator)
@@ -22,7 +22,7 @@ object App extends App {
     .schema(customSchema)
     .load(pathCSV)
 
-  def writeDataFrame2Parquet(df: DataFrame, pathParquet: String, saveMode: SaveMode, header: String, nullValue: String, delimiter: String): Unit = {
+  def createParquetFile(df: DataFrame, pathParquet: String, saveMode: SaveMode, header: String, nullValue: String, delimiter: String): Unit = {
 
     df.write
       .format("com.databricks.spark.csv")
@@ -67,11 +67,11 @@ object App extends App {
 
   val mySchemaStructType = DataType.fromJson(schema_json.head).asInstanceOf[StructType]
 
-  val myDF : org.apache.spark.sql.DataFrame = loadCSV(sqlContext, path_input_csv, nullValue, separator, mySchemaStructType, header)
+  val myDF : org.apache.spark.sql.DataFrame = loadFile(sqlContext, path_input_csv, nullValue, separator, mySchemaStructType, header)
 
   val saveMode = SaveMode.Append
 
-  writeDataFrame2Parquet(myDF, path_output_parquet, saveMode, header, nullValue, separator)
+  createParquetFile(myDF, path_output_parquet, saveMode, header, nullValue, separator)
 
 
 }
