@@ -1,25 +1,9 @@
 package com.aironman.utils
 
-import java.sql.Timestamp
-import java.text.SimpleDateFormat
-import java.util.Calendar
-
-import org.apache.log4j._
-import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode, SparkSession}
-import org.apache.spark.{SparkConf, SparkContext}
-
-import scala.collection.mutable
-import org.apache.spark.sql.types._
 import org.apache.hadoop.fs.{FSDataInputStream, Path}
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
-import java.io._
-
-import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.FileSystem
-import org.apache.hadoop.fs.Path
-
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode}
+import org.apache.spark.{SparkConf, SparkContext}
 
 
 /**
@@ -28,21 +12,15 @@ import org.apache.spark.sql.SparkSession
  */
 object App extends App {
 
-  def loadCSV(sqlContext: SQLContext, pathCSV: String, nullValue: String, separator: String, customSchema: StructType, haveSchema: String): DataFrame = {
-
-    //logger.info("loadCSV. header is " + haveSchema.toString + ", inferSchema is false pathCSV is " + pathCSV + " separator is " + separator)
-
-    sqlContext.read
-      .format("com.databricks.spark.csv")
-      .option("header", haveSchema) // Use first line of all files as header
-      .option("delimiter", separator)
-      .option("nullValue", nullValue)
-      //Esto provoca que pete en runtime si encuentra un fallo en la línea que esté parseando
-      .option("mode", "FAILFAST")
-      .schema(customSchema)
-      .load(pathCSV)
-
-  }
+  def loadCSV(sqlContext: SQLContext, pathCSV: String, nullValue: String, separator: String, customSchema: StructType, haveSchema: String): DataFrame = sqlContext.read
+    .format("com.databricks.spark.csv")
+    .option("header", haveSchema) // Use first line of all files as header
+    .option("delimiter", separator)
+    .option("nullValue", nullValue)
+    //Esto provoca que pete en runtime si encuentra un fallo en la línea que esté parseando
+    .option("mode", "FAILFAST")
+    .schema(customSchema)
+    .load(pathCSV)
 
   def writeDataFrame2Parquet(df: DataFrame, pathParquet: String, saveMode: SaveMode, header: String, nullValue: String, delimiter: String): Unit = {
 
@@ -62,7 +40,7 @@ object App extends App {
   val conf = new SparkConf()
   if (System.getProperty("spark.master") == null) conf.setMaster("local[2]")
   if (System.getProperty("spark.app.name") == null) conf.setAppName("parquetGenerator")
-  //tienes que activar esto para que puedas ejecutar el main en local, ademas debes poner el scope del spark-sql a compile en vez de provided
+
   //conf.set("spark.io.compression.codec","lzf")
   val sc = new SparkContext(conf)
 
