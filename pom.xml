@@ -20,7 +20,7 @@
     <spark.version>2.1.1</spark.version>
     <commons.version>0.1.0</commons.version>
     <databricks.version>1.5.0</databricks.version>
-    <json4s-native.version>3.5.0</json4s-native.version>
+    <json4s-native.version>3.6.12</json4s-native.version>
   </properties>
 
   <developers>
